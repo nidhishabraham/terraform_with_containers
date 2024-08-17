@@ -1,53 +1,78 @@
-PREREQUISIITE -  Create a repo in aws ECR with name - > django-app 
+📝 Pre-requisite:
 
-IMPORTANT - Once the repo is create change the 600735812827.dkr.ecr.us-west-1.amazonaws.com IN COMMANDS TO THE REPO OF YOURS
+Create an AWS ECR Repository:
 
-1) Change the docker_image_url_django in VARIABLES.TF file with <YOUR ECR REPO URL>
+Name the repository: django-app.
 
-2) Change the policy file paths in iam.tf and variables.tf file
+Important: Replace 600735812827.dkr.ecr.us-west-1.amazonaws.com in the commands with your own ECR repository URL.
 
-3) aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin <YOUR ECR REPO URL>
+🔧 Steps:
+1️) Update the VARIABLES.TF File:
 
-4) cd app/
+Replace docker_image_url_django with your ECR repository URL.
+2) Update IAM Policies:
 
-5) docker build -t <YOUR ECR REPO URL>/django-app:latest .
+Modify the policy file paths in both iam.tf and variables.tf files.
+3) Log in to AWS ECR:
 
-6) docker build --platform=linux/amd64 -t 240910715551.dkr.ecr.us-west-1.amazonaws.com/django-app:latest .
+aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin <YOUR ECR REPO URL>
 
+4) Navigate to the Application Directory:
 
-6)docker push 240910715551.dkr.ecr.us-west-1.amazonaws.com/django-app:latest
+cd app/
 
-7) Go to terraform folder and hit this below command 
+5) Build the Docker Image:
+
+docker build -t <YOUR ECR REPO URL>/django-app:latest .
+
+6) Build the Image for amd64 Platform:
+
+docker build --platform=linux/amd64 -t <YOUR ECR REPO URL>/django-app:latest .
+
+7) Push the Docker Image to ECR:
+
+docker push <YOUR ECR REPO URL>/django-app:latest
+
+8) Navigate to the Terraform Directory and Execute Commands:
+
+Generate SSH Key Pair:
 
 ssh-keygen -f california-region-key-pair
 
+Initialize Terraform:
 
-terraform init 
+terraform init
 
+Plan the Terraform Deployment:
 
 terraform plan -out terraform.out
 
+Apply the Terraform Plan:
 
 terraform apply "terraform.out"
 
+9) Install Required Python Packages:
 
+pip install boto3 click
 
-8) pip install boto3 click
+10) Set AWS Environment Variables:
 
+export AWS_ACCESS_KEY_ID=""
+export AWS_SECRET_ACCESS_KEY=""
+export AWS_DEFAULT_REGION="us-west-1"
 
-9) export AWS_ACCESS_KEY_ID="" 
+11) Deploy the Application:
 
+Navigate to the deploy Folder:
 
-10) export AWS_SECRET_ACCESS_KEY="" 
+cd deploy/
 
+Run the Deployment Script:
 
-11) export AWS_DEFAULT_REGION="us-west-1" 
+python3 update-ecs.py --cluster=production-cluster --service=production-service
 
+12) Clean Up Resources:
 
-12 ) cd deploy folder 
+Destroy Terraform-managed Infrastructure:
 
-Run command in deploy folder - python3 update-ecs.py --cluster=production-cluster --service=production-service
-
-
-13 ) terraform destroy
-
+terraform destroy
